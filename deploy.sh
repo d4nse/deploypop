@@ -126,6 +126,13 @@ EOF
     sudo apt install librewolf -y
 }
 
+install_reaper() {
+    # ADD REAPER CONFIGURATION ALONG WITH YABRIDGE N SHIT
+    # qjackctl will usually pull jackd and all the dependencies they need together
+    # list of libs: libgdk3.0-cil libgdk3.0-cil-dev qjackctl
+    return 0
+}
+
 update_neovim() {
     nvim_path="$HOME/opt/nvim"
     echo "Updating Neovim..."
