@@ -1,0 +1,25 @@
+[/]
+default='3119b29e-9be7-464e-80d2-83c3510cf79e'
+list=['b1dcc9dd-5262-4d8d-a863-c897e6d979b9', '3119b29e-9be7-464e-80d2-83c3510cf79e']
+
+[:3119b29e-9be7-464e-80d2-83c3510cf79e]
+allow-bold=true
+background-color='#262623233535'
+background-transparency-percent=20
+bold-color='#FFFFFFFFFFFF'
+bold-color-same-as-fg=true
+bold-is-bright=true
+cursor-background-color='#0303EDEDF9F9'
+cursor-colors-set=true
+cursor-foreground-color='#262623233535'
+font='MesloLGS NF 16'
+foreground-color='#FFFFFFFFFFFF'
+palette=['#010116162727', '#FEFE44445050', '#7272F1F1B8B8', '#FEFEDEDE5D5D', '#0303EDEDF9F9', '#FFFF7E7EDBDB', '#0303EDEDF9F9', '#FFFFFFFFFFFF', '#575756565656', '#FEFE44445050', '#7272F1F1B8B8', '#FEFEDEDE5D5D', '#0303EDEDF9F9', '#FFFF7E7EDBDB', '#0303EDEDF9F9', '#FFFFFFFFFFFF']
+use-theme-background=false
+use-theme-colors=false
+use-theme-transparency=false
+use-transparent-background=true
+visible-name='Synthwave'
+
+[:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
+font='MesloLGS NF 12'
