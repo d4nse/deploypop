@@ -55,6 +55,7 @@ source ~/opt/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # PATH extensions
+export PATH="$PATH:$HOME/.local/share/yabridge"
 export PATH="$PATH:$HOME/opt/nvim/bin"
 export PATH="$PATH:$HOME/opt/TEXLIVE/2023/bin/x86_64-linux"
 export PATH="$PATH:$HOME/.local/bin"
@@ -62,11 +63,10 @@ export PATH="$PATH:$HOME/.local/bin"
 # Keyboard tweaks
 setxkbmap -option caps:swapescape
 
-#                       #
-#       ALIASES         #
-#                       #
-alias ls="LC_COLLATE=C ls --color=tty -lh --group-directories-first"
+# Aliases
+alias ls="LC_COLLATE=C ls --color=tty --group-directories-first"
 alias la="ls -A"
+alias ll="ls -lh"
 alias grep="grep --color=auto"
 alias diff="diff --color"
 alias vi="nvim"
@@ -74,6 +74,13 @@ alias reload="source $HOME/.zshrc"
 alias feh="feh --scale-down --geometry +1920+1080 --image-bg style"
 alias mpv="mpv --loop"
 alias rename="rename -v"
+
+# Yabridge
+alias yab="yabridgectl"
+alias -g vst2win="$HOME/.wine/drive_c/Program\ Files/Steinberg/VstPlugins"
+alias -g vst3win="$HOME/.wine/drive_c/Program\ Files/Common Files/VST3"
+alias -g vst3="$HOME/.vst3"
+alias -g vst2="$HOME/.vst"
 
 # Suffixes
 alias -s pdf="evince"

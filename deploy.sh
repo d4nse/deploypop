@@ -46,12 +46,6 @@ install_gogh_theme() {
 install_neovim() {
     NVIM_EXTRACT_PATH="/tmp/nvim-linux64"
     NVIM_INSTALL_PATH="$HOME/opt/nvim"
-    NVIM_DOT_PATH="$HOME/.config/nvim"
-
-    # Check path exists
-    if [[ ! -d "$NVIM_DOT_PATH" ]]; then
-        mkdir -p "$NVIM_DOT_PATH"
-    fi
 
     # Install neovim
     if [[ -d "$NVIM_INSTALL_PATH" ]]; then
@@ -63,9 +57,6 @@ install_neovim() {
             mv "$NVIM_EXTRACT_PATH" "$NVIM_INSTALL_PATH"
         echo "Successfully installed Neovim to '$NVIM_INSTALL_PATH'"
     fi
-
-    echo "Dropping dots to $NVIM_DOT_PATH..."
-    cp "$RICE_DIR/dots/init.vim" "$NVIM_DOT_PATH"
 }
 
 install_fonts() {
@@ -113,10 +104,6 @@ install_zsh_config() {
         git clone --quiet --depth=1 https://github.com/romkatv/powerlevel10k.git "$POWER_INSTALL_PATH"
     fi
 
-    # Copy dotfiles
-    echo "Dropping dots to home..."
-    cp {"$RICE_DIR/dots/.zshrc","$RICE_DIR/dots/.p10k"} "$HOME/"
-
     # Change shell to zsh
     if [ "$SHELL" != "/usr/bin/zsh" ]; then
         echo "Changing shell to ZSH..."
@@ -126,6 +113,19 @@ install_zsh_config() {
     fi
 
     echo "Successfully installed ZSH configuration"
+}
+
+copy_dots() {
+    echo "Copying dots..."
+    cp --verbose "$RICE_DIR/dots/.zshrc" "$HOME/"
+    cp --verbose "$RICE_DIR/dots/.p10k.zsh" "$HOME/"
+    cp --verbose --recursive "$RICE_DIR/dots/nvim" "$HOME/.config/"
+    cp --verbose --recursive "$RICE_DIR/dots/feh" "$HOME/.config/"
+}
+
+load_dconf() {
+    echo "Loading gnome-terminal-profiles.dconf..."
+    dconf load /org/gnome/terminal/legacy/profiles:/ <"$RICE_DIR/dconf/gnome-terminal-profiles.dconf"
 }
 
 add_repo_librewolf() {
@@ -149,25 +149,6 @@ install_vscode() {
     # Make sure to specify the latest version at the time:
     #   sudo apt install code=1.84.2-1699528352
 
-    # For all:
-    #   get latest neovim from github, not apt. Put it in $HOME/opt
-
-    # For C++ profile:
-    #   clangd cmake
-    #   also g++-12 on ubuntu derivatives fixes the inability of clangd to find basic headers
-
-    # For BASH:
-    #   shfmt shellcheck
-
-    # For python:
-    #   python3-pip
-    #   ALWAYS MAKE A VENV
-
-    # For Latex:
-    #   in addition to texlive install these for format to work:
-    #       libyaml-tiny-perl
-    #       libfile-homedir-perl
-
     # Run this to fix indentation:
     # echo "IndentWidth: 4" >> "$HOME/.clang-format"
     return 0
@@ -182,6 +163,7 @@ install_reaper() {
 
 automatic_wizard() {
     # Get requirements
+    echo "Installing requirements through aptitude..."
     sudo apt-get update 1>/dev/null &&
         xargs sudo apt-get install -y <"$SCRIPT_DIR/requirements.txt" 1>/dev/null
 
@@ -195,8 +177,12 @@ automatic_wizard() {
     install_gogh_theme
     install_neovim
     install_zsh_config
+    add_repo_librewolf
+    copy_dots
+    load_dconf
 
     # Get the rest of the apps
+    echo "Installing the rest of the apps through aptitude..."
     sudo apt-get update 1>/dev/null &&
         xargs sudo apt-get install -y <"$SCRIPT_DIR/apps.txt" 1>/dev/null
 
@@ -207,6 +193,7 @@ getopts amh opt
 case $opt in
 a)
     echo "Automatic installation is chosen"
+    automatic_wizard
     ;;
 m)
     echo "Manual installation is chosen"

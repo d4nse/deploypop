@@ -1,8 +1,9 @@
 # Deploy POP!
 
 ## TODO
-- Add some checks before installation to make sure nothing is overwritten
-- Add an option to re-install (overwrite) something if needed
+- [ ] Add an option to re-install (overwrite) something if needed
+- [ ] Add REAPER installation and configuration alog with jack, qjackctl and yabridge
+- [ ] Add vscode installation and configuration
 
 ## TEMP NOTES
 some packages to keep in mind:
