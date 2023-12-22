@@ -1,0 +1,7 @@
+librewolf
+keepassxc
+code
+feh
+mpv
+tree
+neofetch
