@@ -2,7 +2,8 @@
 This is a script designed to get Pop!_OS up and running with stuff I need.
 
 ## TODO
-- [ ] Make basic deploy
+- [x] Make basic deploy
+- [ ] Add gnome tokyo night theme and implement cosmic related fixes for it
 - [ ] Add REAPER installation and configuration alog with jack, qjackctl and yabridge
 - [ ] Add vscode installation and configuration
 - [ ] Add an option to re-install (overwrite) something if needed

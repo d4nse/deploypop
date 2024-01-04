@@ -19,19 +19,6 @@ install_gogh() {
         git clone --quiet https://github.com/Gogh-Co/Gogh.git "$GOGH_INSTALL_PATH"
     fi
 
-    # Install theme
-    if [[ -f "$GOGH_THEME_PATH" ]]; then
-        if [[ -f "$GOGH_THEME_PATH.installed" ]]; then
-            echo "Terminal theme '$GOGH_THEME_NAME' is already installed"
-        else
-            export TERMINAL=gnome-terminal
-            bash "$GOGH_THEME_PATH"
-            touch "$GOGH_THEME_PATH.installed"
-            echo "Terminal theme '$GOGH_THEME_NAME' successfully installed"
-        fi
-    else
-        echo "Terminal theme '$GOGH_THEME_NAME' was not found in '$GOGH_INSTALL_PATH/installs/'"
-    fi
 }
 
 install_neovim() {
@@ -63,23 +50,16 @@ install_fonts() {
 
     # Download fonts
     if [[ ! -f "$MESLO_REGULAR" ]]; then
-        echo "Downloading Meslo Regular..."
+        echo "Installing fonts..."
         curl --silent --location https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf --output "$MESLO_REGULAR"
-    fi
-    if [[ ! -f "$MESLO_BOLD" ]]; then
-        echo "Downloading Meslo Bold..."
         curl --silent --location https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf --output "$MESLO_BOLD"
-    fi
-    if [[ ! -f "$MESLO_ITALIC" ]]; then
-        echo "Downloading Meslo Italic..."
         curl --silent --location https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf --output "$MESLO_ITALIC"
-    fi
-    if [[ ! -f "$MESLO_BOLD_ITALIC" ]]; then
-        echo "Downloading Meslo Bold Italic..."
         curl --silent --location https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf --output "$MESLO_BOLD_ITALIC"
+        echo "Rebuilding font cache..."
+        fc-cache -f
+    else
+        echo "Fonts seem to be already installed in ~/.fonts"
     fi
-    echo "Rebuilding font cache..."
-    fc-cache -f
 }
 
 install_zsh() {
@@ -105,7 +85,7 @@ install_zsh() {
 
 load_dconfs() {
     echo "Loading gnome-terminal-profiles.dconf..."
-    dconf load /org/gnome/terminal/legacy/profiles:/ <"$DCONF_DIR/dconf/gnome-terminal-profiles.dconf"
+    dconf load /org/gnome/terminal/legacy/profiles:/ <"$DCONF_DIR/gnome-terminal-profiles.dconf"
 }
 
 add_repo_librewolf() {
@@ -142,9 +122,10 @@ install_reaper() {
 echo "Deploying POP_OS!"
 
 # Get requirements
-echo "Installing requirements..."
-sudo apt-get update 1>/dev/null &&
-    xargs sudo apt-get install -y <"$SCRIPT_DIR/requirements.txt" 1>/dev/null
+echo "Doing the usual update/upgrade routine..."
+sudo apt-get update && sudo apt-get upgrade
+echo "Installing dependencies.txt..."
+xargs sudo apt-get install -y <"$SCRIPT_DIR/requirements.txt" 1>/dev/null
 
 # Setup directories
 if [[ ! -d "$HOME/opt" ]]; then
@@ -165,10 +146,10 @@ load_dconfs
 
 # Copy dots
 echo "Copying dots..."
-cp --verbose "$DOTS_DIR/.zshrc" "$HOME/"
-cp --verbose "$DOTS_DIR/.p10k.zsh" "$HOME/"
-cp --verbose --recursive "$DOTS_DIR/nvim" "$HOME/.config/"
-cp --verbose --recursive "$DOTS_DIR/feh" "$HOME/.config/"
+cp "$DOTS_DIR/.zshrc" "$HOME/"
+cp "$DOTS_DIR/.p10k.zsh" "$HOME/"
+cp --recursive "$DOTS_DIR/nvim" "$HOME/.config/"
+cp --recursive "$DOTS_DIR/feh" "$HOME/.config/"
 
 # Get the rest of the apps
 #echo "Installing the rest of the apps through aptitude..."
