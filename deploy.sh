@@ -1,19 +1,11 @@
 #!/usr/bin/env bash
 
+# Store source dirs
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-RICE_DIR="$SCRIPT_DIR/rice"
+DOTS_DIR="$SCRIPT_DIR/rice/dots"
+DCONF_DIR="$SCRIPT_DIR/rice/dconf"
 
-print_help() {
-    echo "Script for automatic system deployment POP!_OS edition."
-    echo
-    echo "Usage: $0 [a|m|h]"
-    echo
-    echo "  -a, --automatic     install everything without prompting"
-    echo "  -m, --manual        enter manual mode and choose what to install"
-    echo "  -h, --help          print this page"
-}
-
-install_gogh_theme() {
+install_gogh() {
     # requirements: dconf-cli uuid-runtime
     GOGH_THEME_NAME="synthwave"
     GOGH_INSTALL_PATH="$HOME/opt/gogh-themes"
@@ -25,7 +17,6 @@ install_gogh_theme() {
     else
         echo "Downloading latest Gogh..."
         git clone --quiet https://github.com/Gogh-Co/Gogh.git "$GOGH_INSTALL_PATH"
-        echo "Successfully installed Gogh to '$GOGH_INSTALL_PATH'"
     fi
 
     # Install theme
@@ -55,7 +46,6 @@ install_neovim() {
         curl --silent --location https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz --output "$NVIM_EXTRACT_PATH.tar.gz" &&
             tar --extract --file="$NVIM_EXTRACT_PATH.tar.gz" --directory="/tmp/" &&
             mv "$NVIM_EXTRACT_PATH" "$NVIM_INSTALL_PATH"
-        echo "Successfully installed Neovim to '$NVIM_INSTALL_PATH'"
     fi
 }
 
@@ -71,7 +61,7 @@ install_fonts() {
         mkdir "$FONT_PATH"
     fi
 
-    # Check if font is installed, download if not
+    # Download fonts
     if [[ ! -f "$MESLO_REGULAR" ]]; then
         echo "Downloading Meslo Regular..."
         curl --silent --location https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf --output "$MESLO_REGULAR"
@@ -92,7 +82,7 @@ install_fonts() {
     fc-cache -f
 }
 
-install_zsh_config() {
+install_zsh() {
     # requirements: zsh zsh-syntax-highlighting
     POWER_INSTALL_PATH="$HOME/opt/powerlevel10k"
 
@@ -111,21 +101,11 @@ install_zsh_config() {
     else
         echo "Shell is already set to ZSH"
     fi
-
-    echo "Successfully installed ZSH configuration"
 }
 
-copy_dots() {
-    echo "Copying dots..."
-    cp --verbose "$RICE_DIR/dots/.zshrc" "$HOME/"
-    cp --verbose "$RICE_DIR/dots/.p10k.zsh" "$HOME/"
-    cp --verbose --recursive "$RICE_DIR/dots/nvim" "$HOME/.config/"
-    cp --verbose --recursive "$RICE_DIR/dots/feh" "$HOME/.config/"
-}
-
-load_dconf() {
+load_dconfs() {
     echo "Loading gnome-terminal-profiles.dconf..."
-    dconf load /org/gnome/terminal/legacy/profiles:/ <"$RICE_DIR/dconf/gnome-terminal-profiles.dconf"
+    dconf load /org/gnome/terminal/legacy/profiles:/ <"$DCONF_DIR/dconf/gnome-terminal-profiles.dconf"
 }
 
 add_repo_librewolf() {
@@ -148,9 +128,6 @@ install_vscode() {
     #   sudo apt install code
     # Make sure to specify the latest version at the time:
     #   sudo apt install code=1.84.2-1699528352
-
-    # Run this to fix indentation:
-    # echo "IndentWidth: 4" >> "$HOME/.clang-format"
     return 0
 }
 
@@ -161,47 +138,41 @@ install_reaper() {
     return 0
 }
 
-automatic_wizard() {
-    # Get requirements
-    echo "Installing requirements through aptitude..."
-    sudo apt-get update 1>/dev/null &&
-        xargs sudo apt-get install -y <"$SCRIPT_DIR/requirements.txt" 1>/dev/null
+# welcome
+echo "Deploying POP_OS!"
 
-    # Setup directories
-    if [[ ! -d "$HOME/opt" ]]; then
-        mkdir "$HOME/opt"
-    fi
+# Get requirements
+echo "Installing requirements..."
+sudo apt-get update 1>/dev/null &&
+    xargs sudo apt-get install -y <"$SCRIPT_DIR/requirements.txt" 1>/dev/null
 
-    # Run installs
-    install_fonts
-    install_gogh_theme
-    install_neovim
-    install_zsh_config
-    add_repo_librewolf
-    copy_dots
-    load_dconf
+# Setup directories
+if [[ ! -d "$HOME/opt" ]]; then
+    mkdir "$HOME/opt"
+fi
 
-    # Get the rest of the apps
-    echo "Installing the rest of the apps through aptitude..."
-    sudo apt-get update 1>/dev/null &&
-        xargs sudo apt-get install -y <"$SCRIPT_DIR/apps.txt" 1>/dev/null
+# Run installs
+install_fonts
+install_gogh
+install_neovim
+install_zsh
 
-    echo "Done. Log out for changes to take effect."
-}
+# Add additional repos
+add_repo_librewolf
 
-getopts amh opt
-case $opt in
-a)
-    echo "Automatic installation is chosen"
-    automatic_wizard
-    ;;
-m)
-    echo "Manual installation is chosen"
-    ;;
-h)
-    print_help
-    ;;
-*)
-    print_help
-    ;;
-esac
+# Load dconf configs
+load_dconfs
+
+# Copy dots
+echo "Copying dots..."
+cp --verbose "$DOTS_DIR/.zshrc" "$HOME/"
+cp --verbose "$DOTS_DIR/.p10k.zsh" "$HOME/"
+cp --verbose --recursive "$DOTS_DIR/nvim" "$HOME/.config/"
+cp --verbose --recursive "$DOTS_DIR/feh" "$HOME/.config/"
+
+# Get the rest of the apps
+#echo "Installing the rest of the apps through aptitude..."
+#sudo apt-get update 1>/dev/null &&
+#    xargs sudo apt-get install -y <"$SCRIPT_DIR/apps.txt" 1>/dev/null
+
+echo "Done. Reboot for changes to take effect."

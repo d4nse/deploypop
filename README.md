@@ -1,12 +1,13 @@
-# Deploy POP!
+# deploypop
+This is a script designed to get Pop!_OS up and running with stuff I need.
 
 ## TODO
-- [ ] Add an option to re-install (overwrite) something if needed
+- [ ] Make basic deploy
 - [ ] Add REAPER installation and configuration alog with jack, qjackctl and yabridge
 - [ ] Add vscode installation and configuration
+- [ ] Add an option to re-install (overwrite) something if needed
 
 ## Notes
-Some notes on how to do automation in Gnome
 Some packages to keep in mind:
 #### APT
 - ttf-mscorefonts-installer
@@ -16,6 +17,7 @@ Some packages to keep in mind:
 - org.kde.kdenlive
 - org.telegram.desktop
 
+Some notes on how to do automation in Gnome
 ### gnome-terminal profiles
 Dump (export) terminal profiles using dconf:
 ```bash

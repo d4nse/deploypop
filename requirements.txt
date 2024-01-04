@@ -5,8 +5,8 @@ zsh-syntax-highlighting
 ffmpeg
 lm-sensors
 gnome-tweaks
-
 cmake
+build-essential
 clangd
 g++-12
 shfmt
@@ -14,10 +14,8 @@ shellcheck
 python3-pip
 libyaml-tiny-perl
 libfile-homedir-perl
-
 dconf-cli
 uuid-runtime
-
 wget
 gnupg
 lsb-release

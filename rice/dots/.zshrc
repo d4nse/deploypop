@@ -159,11 +159,6 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 mkcd() { mkdir "${1}" && cd "${1}" || return; }
 
-fcd() { # Finds dirs in $1 and pipes list into fzf
-    if [[ -z "$1" ]]; then DIR="$HOME"; else DIR="$1"; fi
-    cd "$(find "${DIR}" -type d | fzf)" || return
-}
-
 # Perl rename
 tolower() { rename -v "y/A-Z/a-z/" "$@"; }
 toupper() { rename -v "y/a-z/A-Z/" "$@"; }
