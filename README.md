@@ -1,9 +1,17 @@
 # deploypop
 This is a script designed to get Pop!_OS up and running with stuff I need.
 
+## Installation
+1. Install pop as normal with provided gui
+2. Do `sudo apt update && sudo apt upgrade -y` and reboot
+3. Clone this repo `git clone https://github.com/d4nse/deploypop`
+4. Run the script `bash deploy.sh`
+
 ## TODO
 - [x] Make basic deploy
-- [ ] Add gnome tokyo night theme and implement cosmic related fixes for it
+- [x] Add gnome tokyo night theme and implement cosmic related fixes for it
+- [ ] Implement mscorefonts installation
+- [ ] Implement flatpak apps installation
 - [ ] Add REAPER installation and configuration alog with jack, qjackctl and yabridge
 - [ ] Add vscode installation and configuration
 - [ ] Add an option to re-install (overwrite) something if needed
@@ -17,18 +25,6 @@ Some packages to keep in mind:
 - md.obsidian.Obsidian
 - org.kde.kdenlive
 - org.telegram.desktop
-
-Some notes on how to do automation in Gnome
-### gnome-terminal profiles
-Dump (export) terminal profiles using dconf:
-```bash
-dconf dump /org/gnome/terminal/legacy/profiles:/ > gnome-terminal-profiles.dconf
-```
-Load (import) terminal profiles using dconf:
-```bash
-dconf load /org/gnome/terminal/legacy/profiles:/ < gnome-terminal-profiles.dconf
-```
-if you get `error: Key file does not start with a group` replace/add leading line of your dump with `[/]`
 
 ### vscode
 #### clangd
