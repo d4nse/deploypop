@@ -6,22 +6,6 @@ DOTS_DIR="$SCRIPT_DIR/rice/dots"
 DCONF_DIR="$SCRIPT_DIR/rice/dconf"
 CSS_DIR="$SCRIPT_DIR/rice/css"
 
-install_gogh() {
-    # requirements: dconf-cli uuid-runtime
-    GOGH_THEME_NAME="synthwave"
-    GOGH_INSTALL_PATH="$HOME/opt/gogh-themes"
-    GOGH_THEME_PATH="$GOGH_INSTALL_PATH/installs/$GOGH_THEME_NAME.sh"
-
-    # Install Gogh
-    if [[ ! -d "$GOGH_INSTALL_PATH" ]]; then
-        echo "Downloading latest Gogh..."
-        git clone --quiet https://github.com/Gogh-Co/Gogh.git "$GOGH_INSTALL_PATH"
-    else
-        echo "Gogh is already installed to $GOGH_INSTALL_PATH"
-    fi
-
-}
-
 install_neovim() {
     NVIM_EXTRACT_PATH="/tmp/nvim-linux64"
     NVIM_INSTALL_PATH="$HOME/opt/nvim"
@@ -86,12 +70,14 @@ install_gnome_theme() {
 
     # Install user-theme extension
     if [[ ! -d "$HOME/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com" ]]; then
+        echo "Installing user-theme extension"
         # Im using gdbus call here to install this extension and enable it without the need to reboot or restart gnome shell
         gdbus call --session \
             --dest org.gnome.Shell.Extensions \
             --object-path /org/gnome/Shell/Extensions \
             --method org.gnome.Shell.Extensions.InstallRemoteExtension \
             "user-theme@gnome-shell-extensions.gcampax.github.com"
+        sleep 10
     fi
 
     # Download and install gtk theme
@@ -99,15 +85,6 @@ install_gnome_theme() {
         echo "Downloading Tokyo Night GTK theme..."
         git clone --quiet --depth=1 https://github.com/Fausto-Korpsvart/Tokyo-Night-GTK-Theme "$THEME_DOWNLOAD_PATH" &&
             mv "$THEME_DOWNLOAD_PATH/themes/$THEME_NAME" "$THEME_INSTALL_PATH/"
-
-        # Fix missing gsettings schema for shell themes
-        echo "About to fix gsettings missing schema, requires sudo"
-        sudo cp "$HOME/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas/org.gnome.shell.extensions.user-theme.gschema.xml" "/usr/share/glib-2.0/schemas" &&
-            sudo glib-compile-schemas /usr/share/glib-2.0/schemas
-
-        # Apply themes
-        gsettings set org.gnome.desktop.interface gtk-theme "$THEME_NAME"
-        gsettigns set org.gnome.shell.extensions.user-theme name "$THEME_NAME"
     else
         echo "Tokyo Night GTK theme is already installed in $THEME_INSTALL_PATH"
     fi
@@ -117,12 +94,25 @@ install_gnome_theme() {
         echo "Downloading Candy Icons..."
         curl --silent --location https://github.com/EliverLara/candy-icons/archive/refs/heads/master.zip --output "$ICONS_DOWNLOAD_PATH" &&
             unzip -qq "$ICONS_DOWNLOAD_PATH" -d "$ICONS_INSTALL_PATH/"
-
-        # Apply icons
-        gsettings set org.gnome.desktop.interface icon-theme "candy-icons-master"
     else
         echo "Candy icons are already installed in $ICONS_INSTALL_PATH"
     fi
+
+}
+
+tweak_gnome_settings() {
+    # Fix missing gsettings schema for shell themes
+    echo "About to fix gsettings missing schema, requires sudo"
+    sudo cp "$HOME/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas/org.gnome.shell.extensions.user-theme.gschema.xml" "/usr/share/glib-2.0/schemas" &&
+        sudo glib-compile-schemas /usr/share/glib-2.0/schemas
+
+    # Apply themes
+    THEME_NAME="Tokyonight-Dark-BL"
+    gsettings set org.gnome.desktop.interface gtk-theme "$THEME_NAME"
+    gsettigns set org.gnome.shell.extensions.user-theme name "$THEME_NAME"
+
+    # Apply icons
+    gsettings set org.gnome.desktop.interface icon-theme "candy-icons-master"
 
     # Adjust cosmic settings
     COSMIC_PATH="/usr/share/gnome-shell/extensions/pop-cosmic@system76.com"
@@ -150,7 +140,6 @@ install_gnome_theme() {
         gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:appmenu' # Title bar buttons placement on left
         gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'         # Disable automatic suspend
     fi
-
 }
 
 add_repo_librewolf() {
@@ -197,17 +186,17 @@ fi
 
 # Run installs
 install_fonts
-#install_gogh
+install_gnome_theme
 install_neovim
 install_powerlevel
-install_gnome_theme
 
 # Add additional repos
 add_repo_librewolf
 
-# Load dconf configs
+# Load gnome settings
 echo "Loading gnome-terminal-profiles.dconf..."
 dconf load /org/gnome/terminal/legacy/profiles:/ <"$DCONF_DIR/gnome-terminal-profiles.dconf"
+tweak_gnome_settings
 
 # Copy dots
 echo "Copying dots..."
