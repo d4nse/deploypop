@@ -77,7 +77,6 @@ install_gnome_theme() {
             --object-path /org/gnome/Shell/Extensions \
             --method org.gnome.Shell.Extensions.InstallRemoteExtension \
             "user-theme@gnome-shell-extensions.gcampax.github.com"
-        sleep 10
     fi
 
     # Download and install gtk theme
@@ -98,18 +97,14 @@ install_gnome_theme() {
         echo "Candy icons are already installed in $ICONS_INSTALL_PATH"
     fi
 
-}
-
-tweak_gnome_settings() {
     # Fix missing gsettings schema for shell themes
     echo "About to fix gsettings missing schema, requires sudo"
     sudo cp "$HOME/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas/org.gnome.shell.extensions.user-theme.gschema.xml" "/usr/share/glib-2.0/schemas" &&
         sudo glib-compile-schemas /usr/share/glib-2.0/schemas
 
     # Apply themes
-    THEME_NAME="Tokyonight-Dark-BL"
     gsettings set org.gnome.desktop.interface gtk-theme "$THEME_NAME"
-    gsettigns set org.gnome.shell.extensions.user-theme name "$THEME_NAME"
+    gsettings set org.gnome.shell.extensions.user-theme name "$THEME_NAME"
 
     # Apply icons
     gsettings set org.gnome.desktop.interface icon-theme "candy-icons-master"
@@ -134,12 +129,16 @@ tweak_gnome_settings() {
         gsettings set org.gnome.shell.extensions.pop-cosmic show-workspaces-button false               # Disable workspaces button upper left corner
         gsettings set org.gnome.shell.extensions.pop-cosmic show-applications-button false             # Disable applications button upper left corner
         gsettings set org.gnome.shell.extensions.pop-cosmic clock-alignment 'CENTER'                   # Clock in the middle
+        gsettings set org.gnome.shell.extensions.pop-shell active-hint true                            # Enable active hint
+        gsettings set org.gnome.shell.extensions.pop-shell active-hint-border-radius 0                 # Make active hint border sharp
+        gsettings set org.gnome.shell.extensions.pop-shell hint-color-rgba 'rgb(13,185,215)'           # Set active hint border color to turquoise
         gsettings set org.gnome.desktop.peripherals.mouse accel-profile 'flat'                         # Disable mouse acceleration
         gsettings set org.gnome.desktop.peripherals.mouse natural-scroll true                          # Reverse scroll direction
         gsettings set org.gnome.desktop.peripherals.mouse speed -0.40                                  # Change mouse speed (red mouse profile)
         gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:appmenu' # Title bar buttons placement on left
         gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'         # Disable automatic suspend
     fi
+
 }
 
 add_repo_librewolf() {
@@ -186,9 +185,9 @@ fi
 
 # Run installs
 install_fonts
-install_gnome_theme
 install_neovim
 install_powerlevel
+install_gnome_theme
 
 # Add additional repos
 add_repo_librewolf
@@ -196,7 +195,6 @@ add_repo_librewolf
 # Load gnome settings
 echo "Loading gnome-terminal-profiles.dconf..."
 dconf load /org/gnome/terminal/legacy/profiles:/ <"$DCONF_DIR/gnome-terminal-profiles.dconf"
-tweak_gnome_settings
 
 # Copy dots
 echo "Copying dots..."
@@ -214,7 +212,7 @@ cp --recursive "$DOTS_DIR/feh" "$HOME/.config/"
 # Change shell to zsh
 if [ "$SHELL" != "/usr/bin/zsh" ]; then
     echo "Changing shell to ZSH..."
-    chsh -s "$(which zsh)" "$(whoami)"
+    sudo chsh -s "$(which zsh)" "$(whoami)"
 else
     echo "Shell is already set to ZSH"
 fi
