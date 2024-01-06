@@ -84,6 +84,16 @@ install_gnome_theme() {
     if [[ ! -d "$THEME_INSTALL_PATH" ]]; then mkdir -p "$THEME_INSTALL_PATH"; fi
     if [[ ! -d "$ICONS_INSTALL_PATH" ]]; then mkdir -p "$ICONS_INSTALL_PATH"; fi
 
+    # Install user-theme extension
+    if [[ ! -d "$HOME/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com" ]]; then
+        # Im using gdbus call here to install this extension and enable it without the need to reboot or restart gnome shell
+        gdbus call --session \
+            --dest org.gnome.Shell.Extensions \
+            --object-path /org/gnome/Shell/Extensions \
+            --method org.gnome.Shell.Extensions.InstallRemoteExtension \
+            "user-theme@gnome-shell-extensions.gcampax.github.com"
+    fi
+
     # Download and install gtk theme
     if [[ ! -d "$THEME_INSTALL_PATH/$THEME_NAME" ]]; then
         echo "Downloading Tokyo Night GTK theme..."
