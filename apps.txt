@@ -5,3 +5,14 @@ feh
 mpv
 tree
 neofetch
+ffmpeg
+lm-sensors
+cmake
+build-essential
+clangd
+g++-12
+shfmt
+shellcheck
+python3-pip
+libyaml-tiny-perl
+libfile-homedir-perl
